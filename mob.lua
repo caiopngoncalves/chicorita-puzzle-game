@@ -13,6 +13,7 @@ function Mob:new(framesResources, resourceName, x, y)
     self.y = y - self.sprites[self.currentFrame]:getHeight()
     self.moveTimer = 0
     self.xDirectionIsLeft = true
+    self.isMoving = true
     self.moved = false;
 end
 
@@ -36,19 +37,20 @@ function Mob:animation(dt)
 end
 
 function Mob:move(dt)
-    if self.xDirectionIsLeft then
-        self.x = self.x - 50 * dt
-        if self:attack(self.x) then
-            self.xDirectionIsLeft = false
-            --solta poder
-        end
-    else
-        self.x = self.x + 50 * dt
-        if self:wait(self.x) then
-            if (self.x <= 551 and self.x < 552) then
-                self.moved = true
+    if self.isMoving then
+        if self.xDirectionIsLeft then
+            self.x = self.x - 150 * dt
+            if self:attack(self.x) then
+                self.xDirectionIsLeft = false
+                --solta poder
             end
-            self.x = 552
+        else
+            self.x = self.x + 150 * dt
+            if self:wait(self.x) then
+                self.x = 550
+                self.moved = true
+                self.xDirectionIsLeft = true
+            end
         end
     end
 end
@@ -66,5 +68,16 @@ function Mob:wait(x)
         return false
     else
         return true
+    end
+end
+
+function Mob:raffleYPostion()
+    local value = math.random()
+    if value <= 0.33 then
+        self.y = (love.graphics.getHeight() / 4) - self.sprites[self.currentFrame]:getHeight()
+    elseif value > 0.33 and value <= 0.66 then
+        self.y = (love.graphics.getHeight() / 2) - self.sprites[self.currentFrame]:getHeight()
+    else
+        self.y = (love.graphics.getHeight() / 4 * 3) - self.sprites[self.currentFrame]:getHeight()
     end
 end
