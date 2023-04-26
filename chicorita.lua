@@ -10,16 +10,17 @@ function Chicorita:new()
     self.l = self.sprites[self.currentFrame]:getWidth()
     self.a = self.sprites[self.currentFrame]:getHeight()
     self.x = 50 - self.l
-    self.y = love.graphics.getHeight() / 2
+    self.y = love.graphics.getHeight() / 2 - self.a
 end
 
 function Chicorita:update(dt)
     self:animation(dt)
-    self:mechanics()
+    self:mechanics(dt)
 end
 
 function Chicorita:draw()
-    love.graphics.draw(self.sprites[self.currentFrame], self.x + self.a, self.y, 0, -1, 1)
+    --love.graphics.rectangle("fill", self.x, self.y, self.l, self.a)
+    love.graphics.draw(self.sprites[self.currentFrame], self.x + self.l, self.y, 0, -1, 1)
 end
 
 function Chicorita:animation(dt)
@@ -33,12 +34,28 @@ function Chicorita:animation(dt)
     end
 end
 
-function Chicorita:mechanics()
+function Chicorita:mechanics(dt)
     if love.keyboard.isDown("s") then
-        self.y = ((love.graphics.getHeight() / 4) * 3) - self.a
+        self.y = self.y + 200 * dt
+        if (self.y >= ((love.graphics.getHeight() / 4) * 3) - self.a) then
+            self.y = ((love.graphics.getHeight() / 4) * 3) - self.a
+        end
     elseif love.keyboard.isDown("w") then
-        self.y = (love.graphics.getHeight() / 4) - self.a
+        self.y = self.y - 200 * dt
+        if (self.y <= (love.graphics.getHeight() / 4) - self.a) then
+            self.y = (love.graphics.getHeight() / 4) - self.a
+        end
     else
-        self.y = love.graphics.getHeight() / 2 - self.a
+        if (self.y > love.graphics.getHeight() / 2 - self.a) then
+            self.y = self.y - 200 * dt
+            if (self.y <= love.graphics.getHeight() / 2 - self.a) then
+                self.y = love.graphics.getHeight() / 2 - self.a
+            end
+        else
+            self.y = self.y + 200 * dt
+            if (self.y >= love.graphics.getHeight() / 2 - self.a) then
+                self.y = love.graphics.getHeight() / 2 - self.a
+            end
+        end
     end
 end

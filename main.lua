@@ -8,7 +8,7 @@ require "powerup"
 
 
 function love.load()
-    love.window.setMode(600, 400)
+    love.window.setMode(520, 400)
     math.randomseed(os.time())
     game = Game()
 end
