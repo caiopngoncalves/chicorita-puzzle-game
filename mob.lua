@@ -1,9 +1,10 @@
 Mob = Class:extend()
 
-function Mob:new(framesResources, resourceName, x, y)
+function Mob:new(framesResources, resourceName, atkResourceName, x, y)
     self.sprites = {}
     self.framesResources = framesResources
     self.resourceName = resourceName
+    self.atkResourceName = atkResourceName
     for i = 1, self.framesResources do
         table.insert(self.sprites, love.graphics.newImage("resources/" .. resourceName .. " (" .. i .. ").png"))
     end
@@ -15,14 +16,25 @@ function Mob:new(framesResources, resourceName, x, y)
     self.xDirectionIsLeft = true
     self.isMoving = true
     self.moved = false;
+    self.powerUp = {}
 end
 
 function Mob:update(dt)
     self:animation(dt)
+
+    for i, powerUp in ipairs(self.powerUp) do
+        powerUp:update(dt)
+        if (powerUp.x <= -50) then
+            table.remove(self.powerUp, i)
+        end
+    end
 end
 
 function Mob:draw()
     love.graphics.draw(self.sprites[self.currentFrame], self.x, self.y)
+    for i, powerUp in ipairs(self.powerUp) do
+        powerUp:draw()
+    end
 end
 
 function Mob:animation(dt)
@@ -40,9 +52,9 @@ function Mob:move(dt)
     if self.isMoving then
         if self.xDirectionIsLeft then
             self.x = self.x - 150 * dt
-            if self:attack(self.x) then
+            if self:attackMoment(self.x) then
                 self.xDirectionIsLeft = false
-                --solta poder
+                self:attack()
             end
         else
             self.x = self.x + 150 * dt
@@ -55,7 +67,7 @@ function Mob:move(dt)
     end
 end
 
-function Mob:attack(x)
+function Mob:attackMoment(x)
     if x >= 450 then
         return false
     else
@@ -80,4 +92,9 @@ function Mob:raffleYPostion()
     else
         self.y = (love.graphics.getHeight() / 4 * 3) - self.sprites[self.currentFrame]:getHeight()
     end
+end
+
+function Mob:attack()
+    table.insert(self.powerUp,
+        Powerup(self.x, self.y + self.sprites[self.currentFrame]:getHeight() - 25, self.atkResourceName))
 end
